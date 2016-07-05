@@ -2,7 +2,7 @@
 
 ##Using the .exe to run H# programs:
 
-There are two ways you can use HSC build x_y.exe. The first is an an interactive console. Simply open the file and it will act as the interactive console. Type in your program line-by-line and the console will execute it. It's also a great way to test quick code ideas before you implement them. Note that the interactive console does not require (or even recognize) semicolon like breakers.
+There are two ways you can use HSC build x_y.exe. The first is an an interactive console. Simply open the file and it will act as the interactive console. Type in your program line-by-line and the console will execute it. It's also a great way to test quick code ideas before you implement them. Note that the interactive console does not require (or even recognize) semicolon line breakers.
 
 In the interactive console, any remaining value of a line is directed onto the console screen. For example, inputting "2+2" directly will evaluate to 4. However, since you don't do anything with it, it is directed onto the console screen as output. By using the interactive console this way, you can treat H# as a nice calculator. However, if you do "let x=2+2" the value "2+2" is assigned to "x". A "let" statement has no return value, so you get no output.
 

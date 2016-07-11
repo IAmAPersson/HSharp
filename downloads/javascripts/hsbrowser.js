@@ -2302,11 +2302,11 @@ JSIL.DeclareNamespace("HSCi");
 
   function MainLoop_Main () {
     $thisType.AddData();
-    $T03().Write("Build 1.3, H# Interactive: http://iamapersson.github.io/hsharp/ \nPhil Lane Creations\n");
+    console.log("Build 1.3, H# Interactive: http://iamapersson.github.io/hsharp/ \nPhil Lane Creations\n");
 
     while (true) {
       $T03().Write("HSCi> ");
-      var inp = $T01().Preprocessor($T03().ReadLine());
+      var inp = $T01().Preprocessor(readline());
       if (!$T01().RunCommands(inp)) {
         $T03().WriteLine($T01().ParseMath(inp));
       }

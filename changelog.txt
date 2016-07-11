@@ -1,0 +1,12 @@
+Build 1.0:
+Initial Release
+
+Build 1.1:
+Bug Fixes
+
+Build 1.2:
+Higher-order functions
+Tutorial
+More complete list support
+Performance improvements
+Bug fixes

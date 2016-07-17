@@ -14,8 +14,8 @@ The .xml is the syntax highlighting document for NPP, if you decide to use that 
 
 ##Source code
 
-SOURCE.cs is the full source code for H#. You may edit and distribute the code according to the terms of the LICENSE. If you ever need to fix a bug, add on to H#, or just want to take a peek, SOURCE.cs is always there. It is the only file, so no need to worry about complex recompilation of edited code.
+SOURCE.cs is the full source code for H#. You may edit and distribute the code according to the terms of the LICENSE. If you ever need to fix a bug, add on to H#, or just want to take a peek, SOURCE.cs is always there. All of the source code is contained inside that one file. You can recompile into a single .exe file, or you can break it up into different files as shown by the comments I put in there.
 
 ##Tutorial
 
-HSharp Tutorial.txt is a work-in-progress full tutorial for H#. While it is not 100% complete, it covers most of the major ability. Later on, I'll reformat it and upload it to the website at http://iamapersson.github.io/hsharp/
+HSharp Tutorial.txt is a work-in-progress full tutorial for H#. While it is not 100% complete, it covers most of what you'll need to get started. Later on, I'll reformat it and upload it to the website at http://iamapersson.github.io/hsharp/

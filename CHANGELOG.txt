@@ -10,3 +10,15 @@ Tutorial
 More complete list support
 Performance improvements
 Bug fixes
+
+Build 1.3:
+More complete list support
+Header files
+Performance improvements
+Non-recursive functions
+Strings
+IO via world passing
+Broke apart the project into separate files
+Eager evaluation variable assignment
+Pattern matching
+Lambdas

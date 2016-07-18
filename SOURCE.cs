@@ -16,11 +16,11 @@ class MainLoop
         Parser.wildcards.Add("asin[X]", "internalcmmdasinX");
         Parser.wildcards.Add("acos[X]", "internalcmmdacosX");
         Parser.wildcards.Add("atan[X]", "internalcmmdatanX");
-        Parser.wildcards.Add("print[X]", "internalcmmdprntX");
+        Parser.wildcards.Add("print[X,world]", "internalcmmdprntX");
         Parser.vars.Add("getstr[world]", "internalcmmdistr");
         Parser.vars.Add("getnum[world]", "internalcmmdinum");
-        Parser.wildcards.Add("printstr[X]", "internalcmmdpstrX");
-        Parser.wildcards.Add("printstrln[X]", "printstr[X++[10]]");
+        Parser.wildcards.Add("printstr[X,world]", "internalcmmdpstrX");
+        Parser.wildcards.Add("printstrln[X,world]", "printstr[X++[10],world]");
         Parser.wildcards.Add("floor[X]", "internalcmmdflorX");
         Parser.wildcards.Add("ceiling[X]", "internalcmmdceilX");
         Parser.wildcards.Add("map[F,L]", "internalcmmdmapfF,L");
@@ -1718,16 +1718,16 @@ public static class Preprocessor
                     Parser.vars.Add("getstr[world]", "internalcmmdistr");
                 else if (s.Substring(i, 6) == "getnum" && IsntSurrounded(s, i, 6) && !Parser.wildcards.ContainsKey("getnum[world]"))
                     Parser.vars.Add("getnum[world]", "internalcmmdinum");
-                else if (s.Substring(i, 10) == "printstrln" && IsntSurrounded(s, i, 10) && !Parser.wildcards.ContainsKey("printstrln[X]"))
+                else if (s.Substring(i, 10) == "printstrln" && IsntSurrounded(s, i, 10) && !Parser.wildcards.ContainsKey("printstrln[X,world]"))
                 {
-                    Parser.wildcards.Add("printstrln[X]", "printstr[X++[10]]");
-                    if (!Parser.wildcards.ContainsKey("printstr[X]"))
-                        Parser.wildcards.Add("printstr[X]", "internalcmmdpstrX");
+                    Parser.wildcards.Add("printstrln[X,world]", "printstr[X++[10],world]");
+                    if (!Parser.wildcards.ContainsKey("printstr[X,world]"))
+                        Parser.wildcards.Add("printstr[X,world]", "internalcmmdpstrX");
                 }
-                else if (s.Substring(i, 5) == "print" && IsntSurrounded(s, i, 5) && !Parser.wildcards.ContainsKey("print[X]"))
-                    Parser.wildcards.Add("print[X]", "internalcmmdprntX");
-                else if (s.Substring(i, 8) == "printstr" && IsntSurrounded(s, i, 8) && !Parser.wildcards.ContainsKey("printstr[X]"))
-                    Parser.wildcards.Add("printstr[X]", "internalcmmdpstrX");
+                else if (s.Substring(i, 5) == "print" && IsntSurrounded(s, i, 5) && !Parser.wildcards.ContainsKey("print[X,world]"))
+                    Parser.wildcards.Add("print[X,world]", "internalcmmdprntX");
+                else if (s.Substring(i, 8) == "printstr" && IsntSurrounded(s, i, 8) && !Parser.wildcards.ContainsKey("printstr[X,world]"))
+                    Parser.wildcards.Add("printstr[X,world]", "internalcmmdpstrX");
                 else if (s.Substring(i, 5) == "floor" && IsntSurrounded(s, i, 5) && !Parser.wildcards.ContainsKey("floor[X]"))
                     Parser.wildcards.Add("floor[X]", "internalcmmdflorX");
                 else if (s.Substring(i, 7) == "ceiling" && IsntSurrounded(s, i, 7) && !Parser.wildcards.ContainsKey("ceiling[X]"))

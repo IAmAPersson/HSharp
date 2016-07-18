@@ -205,9 +205,9 @@ tan[X] //tan
 asin[X] //arcsine
 acos[X] //arccosine
 atan[X] //arctangent
-print[X] //output the value, and return the input
-printstr[X] //output a number list as a string, and return the input
-printstrln[X] //output a number list as a string followed by a newline, and return the input
+print[X,Y] //output the value, and return the input (note: Y must be the world value)
+printstr[X,Y] //output a number list as a string, and return the input (note: Y must be the world value)
+printstrln[X,Y] //output a number list as a string followed by a newline, and return the input (note: Y must be the world value)
 getstr[X] //input a string from the console (note: X must be the world value)
 getnum[X] //input a number from the console (note: X must be the world value)
 floor[X] //round toward 0

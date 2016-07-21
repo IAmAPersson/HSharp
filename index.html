@@ -32,7 +32,7 @@
 <code style="color:green">//Generates all prime numbers from 2 to 500;</code></span>
 <section class="main-content"><span style="font-family:'Open Sans'"><p>H# is purely functional, meaning it enforces immutable values, and no side-effect-producing functions. Referential transparency was essential when creating H#, but so was friendliness to the user. Operations like <code>getstr</code> and <code>getnum</code> will return a valid <code>string</code>, unlike Haskell which returns <code>IO String</code> from input functions. However, any IO operation requires a <code>world</code> parameter, so the code stays referentially transparent.
 
-H# has a nice blend of lazy evaluation and eager evaluation, which aims to find a happy medium of both types of evaluation systems. As far as typing goes, H# is almost non-typed. It's run via an internal CAS, which allows crazy operations like <code>3+4+x</code> where is isn't defined to just simplify into <code>7+x</code>. As a bonus, mismatched types just don't evaluate, so <code>4+"hi"</code> is a legal return value from a function, or as output onto the console screen.</p></span></section>
+H# has a nice blend of lazy evaluation and eager evaluation, which aims to find a happy medium of both types of evaluation systems. As far as typing goes, H# is almost non-typed. It's run via an internal CAS, which allows crazy operations like <code>3+4+x</code> where <code>x</code> isn't defined to just simplify into <code>7+x</code>. As a bonus, mismatched types just don't evaluate, so <code>4+"hi"</code> is a legal return value from a function, or as output onto the console screen.</p></span></section>
   </body>
   <style>
     .center

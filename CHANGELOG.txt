@@ -22,3 +22,14 @@ Broke apart the project into separate files
 Eager evaluation variable assignment
 Pattern matching
 Lambdas
+
+Build 1.4:
+Completely redone functions
+Turing-complete
+Respects the untyped lambda calculus
+List library
+String library
+Redid IO commands
+Bug fixes
+Pipe operators
+Prepared language for constraint programming support

@@ -1,3 +1,9 @@
+NOTE:
+THIS FILE IS OUTDATED. AN UPDATED TUTORIAL IS BEING WRITTEN. PLEASE BE PATIENT. THANKS!
+
+
+
+
 Learning H#
 
 Hello everybody! My name is Phil Lane, and I'm here to teach you how to use H#. Now, as I am the creator of the language, this tutorial will be the most accurate and deep tutorial you'll ever find. So let's do this!

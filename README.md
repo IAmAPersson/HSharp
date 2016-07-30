@@ -8,7 +8,7 @@ There are two ways you can use HSCi.exe. The first is an an interactive console.
 
 In the interactive console, any remaining value of a line is directed onto the console screen. For example, inputting "2+2" directly will evaluate to 4. However, since you don't do anything with it, it is directed onto the console screen as output. By using the interactive console this way, you can treat H# as a nice calculator. However, if you do "let x=2+2" the value "2+2" is assigned to "x". A "let" statement has no return value, so you get no output.
 
-Alternatively, if you use a program editor like Notepad++ and save your program as a file (typically .hsh) and click "Open file with"->"HSCi.exe" the interpreter will run your multiline program. Note that semicolons are required as line breakers, and newlines in your program are ignored (even for ending a comment, hence why the NPP highlighting has // for a "begin comment" and ; for the "end comment").
+Alternatively, if you use a program editor like Notepad++ and save your program as a file (typically .hsh) and click "Open file with"->"HSCi.exe" the interpreter will run your multiline program. Note that semicolons are required as line breakers, and newlines in your program are ignored (even for ending a comment, hence why the NPP highlighting has // for a "begin comment" and ; for the "end comment"). Note that excess line values in HSC will produce an error, so always pipe your excess values to a unit function (i.e. put "|> ignore" at the end of a line with lingering value).
 
 ##Using the npphighlighting.xml:
 

@@ -13,7 +13,7 @@
             <Keywords name="Numbers, suffix1"></Keywords>
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range"></Keywords>
-            <Keywords name="Operators1">+ - * / ! ^ { } ( ) [ ] = /= &gt; &lt; &gt;= &lt;= ; % , .. | -&gt; &lt;- =&gt; :</Keywords>
+            <Keywords name="Operators1">+ - * / ! ^ { } ( ) [ ] = /= &gt; &lt; &gt;= &lt;= ; % , .. | -&gt; &lt;- =&gt; : |&gt; &lt;|</Keywords>
             <Keywords name="Operators2"></Keywords>
             <Keywords name="Folders in code1, open"></Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
@@ -25,8 +25,8 @@
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
             <Keywords name="Keywords1">if then else let where and or match with when import norec</Keywords>
-            <Keywords name="Keywords2">sin cos tan asin acos atan print floor ceiling round abs min max ln log sign truncate sqrt cbrt nrt reciprocal map filter printstr printstrln getstr getnum</Keywords>
-            <Keywords name="Keywords3">infinity true false unknown NaN world</Keywords>
+            <Keywords name="Keywords2">sin cos tan asin acos atan print floor ceiling round abs min max ln log sign truncate sqrt cbrt nrt reciprocal map filter printstr printstrln getstr getnum length ignore</Keywords>
+            <Keywords name="Keywords3">infinity true false unknown NaN world unit</Keywords>
             <Keywords name="Keywords4">##enableCAS ##disableCAS ##enableIO ##disableIO</Keywords>
             <Keywords name="Keywords5"></Keywords>
             <Keywords name="Keywords6"></Keywords>

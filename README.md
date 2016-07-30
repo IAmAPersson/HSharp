@@ -1,6 +1,6 @@
 #H# README
 
-##Current Version: 1.3
+##Current Version: 1.4
 
 ##Using the .exe to run H# programs:
 

@@ -26,7 +26,7 @@
     <h1 style="text-align:center">Concise, Weakly-Typed, and Purely Functional</h1>
     </section>
     <span class="center">
-<code style="color:blue">let</code><code> primes </code><code style="color:red">=</code><code> filterprime<code style="color:red"> | [</code><code style="color:orange">2..500</code><code style="color:red">]</code>
+<code style="color:blue">let</code><code> primes </code><code style="color:red">=</code><code> filterprime<code style="color:red"> | [</code><code style="color:orange">2..50</code><code style="color:red">]</code>
 &nbsp;&nbsp;&nbsp;&nbsp;<code style="color:blue">where</code><code> filterprime</code><code style="color:red">|[]</code> <code style="color:red">=</code> <code style="color:red">[]</code><code>, filterprime </code><code style="color:red">=</code>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x<code style="color:red"> -> </code>head<code style="color:red"> | </code>x<code style="color:red"> : </code>filterprime <code style="color:red">| (</code><code style="color:teal">filter </code><code style="color:red">| (</code>l <code style="color:red">-></code> l <code style="color:red">% (</code>head<code style="color:red"> | </code>x<code style="color:red">) /= </code><code style="color:orange">0</code><code style="color:red">) | (</code>tail<code style="color:red"> | </code>x<code style="color:red">))</code>
 <code style="color:green">//Generates all prime numbers from 2 to 500;</code></span>

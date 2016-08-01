@@ -673,6 +673,17 @@ public static class Parser
                         return "true";
                 return "false";
             }
+            else if (ParseTools.split(s, "?=").Length == 2)
+            {
+                string a = parseMath(ParseTools.split(s, "?=")[0]), b = parseMath(ParseTools.split(s, "?=")[1]);
+                if (vars.ContainsKey(ParseTools.split(s, "?=")[0] + "?=" + b))
+                    return vars[ParseTools.split(s, "?=")[0] + "?=" + b];
+                if (vars.ContainsKey(a + "?=" + ParseTools.split(s, "?=")[1]))
+                    return vars[a + "?=" + ParseTools.split(s, "?=")[1]];
+                if (a == "unknown" || b == "unknown")
+                    return "true";
+                return a == b ? "true" : "false";
+            }
             else if (ParseTools.split(s, "/=").Length == 2)
             {
                 string a = parseMath(ParseTools.split(s, "/=")[0]), b = parseMath(ParseTools.split(s, "/=")[1]);
@@ -947,6 +958,32 @@ public static class Parser
         return "";
     }
 
+    private static string mapTovars(string s, string mapto)
+    {
+        string varname = ParseTools.remspaces(ParseTools.split(s.Substring(5), "=")[0]);
+        string valname = ParseTools.remstartspaces(ParseTools.singlesplit(s.Substring(5), "=")[1]);
+        int i = 0;
+        while (varname.ToList().Contains('(') && (!varname.ToList().Contains(')')))
+        {
+            varname += "=" + ParseTools.remspaces(ParseTools.split(s.Substring(5), "=")[++i]);
+            valname = ParseTools.remstartspaces(ParseTools.singlesplit(valname, "=")[1]);
+        }
+        if (varname.ToList().Contains('(')) varname = ParseTools.betwparen(varname)[0];
+        if (varname == valname)
+        {
+            Console.WriteLine("Error: Cannot bind variable to itself, tried to bind \"" + varname + "\" to \"" + valname + "\"");
+            return "";
+        }
+        else
+        {
+            mapto = " " + mapto + " ";
+            for (int j = 0; j < mapto.Length - varname.Length + 1; j++)
+                if (mapto.Substring(j, varname.Length) == varname.ToLower())
+                    mapto = mapto.Substring(0, j) + valname + mapto.Substring(j + varname.Length);
+        }
+        return mapto;
+    }
+
     private static bool let(string s, bool suppressdup)
     {
         string varname = ParseTools.fixneg(ParseTools.remspaces(ParseTools.listsplit(s.Substring(5), "=")[0]));
@@ -1105,32 +1142,6 @@ public static class Parser
         return true;
     }
 
-    private static string mapTovars(string s, string mapto)
-    {
-        string varname = ParseTools.remspaces(ParseTools.split(s.Substring(5), "=")[0]);
-        string valname = ParseTools.remstartspaces(ParseTools.singlesplit(s.Substring(5), "=")[1]);
-        int i = 0;
-        while (varname.ToList().Contains('(') && (!varname.ToList().Contains(')')))
-        {
-            varname += "=" + ParseTools.remspaces(ParseTools.split(s.Substring(5), "=")[++i]);
-            valname = ParseTools.remstartspaces(ParseTools.singlesplit(valname, "=")[1]);
-        }
-        if (varname.ToList().Contains('(')) varname = ParseTools.betwparen(varname)[0];
-        if (varname == valname)
-        {
-            Console.WriteLine("Error: Cannot bind variable to itself, tried to bind \"" + varname + "\" to \"" + valname + "\"");
-            return "";
-        }
-        else
-        {
-            mapto = " " + mapto + " ";
-            for (int j = 0; j < mapto.Length - varname.Length + 1; j++)
-                if (mapto.Substring(j, varname.Length) == varname.ToLower())
-                    mapto = mapto.Substring(0, j) + valname + mapto.Substring(j + varname.Length);
-        }
-        return mapto;
-    }
-
     private static bool notlet(string s)
     {
         string varname = ParseTools.fixneg(ParseTools.remspaces(ParseTools.listsplit(s.Substring(5), "/=")[0]));
@@ -1204,6 +1215,374 @@ public static class Parser
                 vars.Add(valname + "=" + varname, "false");
                 vars.Add(varname + "/=" + valname, "true");
                 vars.Add(valname + "/=" + varname, "true");
+            }
+            else
+                Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+        }
+        return true;
+    }
+
+    private static bool greaterlet(string s)
+    {
+        string varname = ParseTools.fixneg(ParseTools.remspaces(ParseTools.listsplit(s.Substring(5), ">")[0]));
+        string valname = ParseTools.remstartspaces(ParseTools.singlelistsplit(s.Substring(5), ">")[1]);
+        if (ParseTools.betwparen(varname).Length > 0 && ParseTools.betwparen(varname)[0] == varname.Substring(1, varname.Length - 2))
+            varname = ParseTools.betwparen(varname)[0];
+        bool haswildcard = false;
+        if (valname.Contains("world"))
+        {
+            Console.WriteLine("Error: Cannot use world value from within a function, attempted to call \"world\" from \"" + valname + "\"");
+            return true;
+        }
+        if (varname == valname)
+        {
+            Console.WriteLine("Error: Cannot make value greater than itself, tried to say \"" + varname + "\" is greater than \"" + valname + "\"");
+            return true;
+        }
+        if (vars.ContainsKey(varname))
+            Console.WriteLine("Error: Value under name \"" + varname + "\" already exists, bound to value \"" + vars[varname] + "\"");
+        else if (ParseTools.split(s, "_if_").Length == 2 && ParseTools.split(s, "_then_").Length == 1)
+        {
+            string res = ParseMath(ParseTools.split(s, "_if_")[1]);
+            if (res == "false")
+                return true;
+            else if (res == "true")
+            {
+                valname = ParseTools.remspaces(ParseTools.split(valname, "_if_")[0]);
+                if (varname == valname)
+                {
+                    Console.WriteLine("Error: Cannot make value greater than itself, tried to say \"" + varname + "\" is greater than \"" + valname + "\"");
+                    return true;
+                }
+                foreach (char j in valname)
+                {
+                    if (j >= 'A' && j <= 'Z')
+                    {
+                        haswildcard = true;
+                        break;
+                    }
+                }
+                if (!haswildcard)
+                {
+                    vars.Add(varname, "unknown");
+                    vars.Add(varname + "=" + valname, "false");
+                    vars.Add(varname + ">" + valname, "true");
+                    vars.Add(varname + ">=" + valname, "true");
+                    vars.Add(varname + "<" + valname, "false");
+                    vars.Add(varname + "<=" + valname, "false");
+                    vars.Add(varname + "/=" + valname, "true");
+                    vars.Add(valname + "=" + varname, "false");
+                    vars.Add(valname + "<" + varname, "true");
+                    vars.Add(valname + "<=" + varname, "true");
+                    vars.Add(valname + ">" + varname, "false");
+                    vars.Add(valname + ">=" + varname, "false");
+                    vars.Add(valname + "/=" + varname, "true");
+                    wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx>" + valname + "_then_true_else_false");
+                    wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx>" + valname + "_then_true_else_false");
+                }
+                else
+                {
+                    Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+                }
+
+            }
+            else return true;
+        }
+        else
+        {
+            foreach (char j in valname)
+            {
+                if (j >= 'A' && j <= 'Z')
+                {
+                    haswildcard = true;
+                    break;
+                }
+            }
+            if (!haswildcard)
+            {
+                vars.Add(varname, "unknown");
+                vars.Add(varname + "=" + valname, "false");
+                vars.Add(varname + ">" + valname, "true");
+                vars.Add(varname + ">=" + valname, "true");
+                vars.Add(varname + "<" + valname, "false");
+                vars.Add(varname + "<=" + valname, "false");
+                vars.Add(varname + "/=" + valname, "true");
+                vars.Add(valname + "=" + varname, "false");
+                vars.Add(valname + "<" + varname, "true");
+                vars.Add(valname + "<=" + varname, "true");
+                vars.Add(valname + ">" + varname, "false");
+                vars.Add(valname + ">=" + varname, "false");
+                vars.Add(valname + "/=" + varname, "true");
+                wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx>" + valname + "_then_true_else_false");
+                wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx>" + valname + "_then_true_else_false");
+            }
+            else
+                Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+        }
+        return true;
+    }
+
+    private static bool lesslet(string s)
+    {
+        string varname = ParseTools.fixneg(ParseTools.remspaces(ParseTools.listsplit(s.Substring(5), "<")[0]));
+        string valname = ParseTools.remstartspaces(ParseTools.singlelistsplit(s.Substring(5), "<")[1]);
+        if (ParseTools.betwparen(varname).Length > 0 && ParseTools.betwparen(varname)[0] == varname.Substring(1, varname.Length - 2))
+            varname = ParseTools.betwparen(varname)[0];
+        bool haswildcard = false;
+        if (valname.Contains("world"))
+        {
+            Console.WriteLine("Error: Cannot use world value from within a function, attempted to call \"world\" from \"" + valname + "\"");
+            return true;
+        }
+        if (varname == valname)
+        {
+            Console.WriteLine("Error: Cannot make value less than itself, tried to say \"" + varname + "\" is less than \"" + valname + "\"");
+            return true;
+        }
+        if (vars.ContainsKey(varname))
+            Console.WriteLine("Error: Value under name \"" + varname + "\" already exists, bound to value \"" + vars[varname] + "\"");
+        else if (ParseTools.split(s, "_if_").Length == 2 && ParseTools.split(s, "_then_").Length == 1)
+        {
+            string res = ParseMath(ParseTools.split(s, "_if_")[1]);
+            if (res == "false")
+                return true;
+            else if (res == "true")
+            {
+                valname = ParseTools.remspaces(ParseTools.split(valname, "_if_")[0]);
+                if (varname == valname)
+                {
+                    Console.WriteLine("Error: Cannot make value less than itself, tried to say \"" + varname + "\" is less than \"" + valname + "\"");
+                    return true;
+                }
+                foreach (char j in valname)
+                {
+                    if (j >= 'A' && j <= 'Z')
+                    {
+                        haswildcard = true;
+                        break;
+                    }
+                }
+                if (!haswildcard)
+                {
+                    vars.Add(varname, "unknown");
+                    vars.Add(varname + "=" + valname, "false");
+                    vars.Add(varname + "<" + valname, "true");
+                    vars.Add(varname + "<=" + valname, "true");
+                    vars.Add(varname + ">" + valname, "false");
+                    vars.Add(varname + ">=" + valname, "false");
+                    vars.Add(varname + "/=" + valname, "true");
+                    vars.Add(valname + "=" + varname, "false");
+                    vars.Add(valname + ">" + varname, "true");
+                    vars.Add(valname + ">=" + varname, "true");
+                    vars.Add(valname + "<" + varname, "false");
+                    vars.Add(valname + "<=" + varname, "false");
+                    vars.Add(valname + "/=" + varname, "true");
+                    wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx<" + valname + "_then_true_else_false");
+                    wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx<" + valname + "_then_true_else_false");
+                }
+                else
+                {
+                    Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+                }
+
+            }
+            else return true;
+        }
+        else
+        {
+            foreach (char j in valname)
+            {
+                if (j >= 'A' && j <= 'Z')
+                {
+                    haswildcard = true;
+                    break;
+                }
+            }
+            if (!haswildcard)
+            {
+                vars.Add(varname, "unknown");
+                vars.Add(varname + "=" + valname, "false");
+                vars.Add(varname + "<" + valname, "true");
+                vars.Add(varname + "<=" + valname, "true");
+                vars.Add(varname + ">" + valname, "false");
+                vars.Add(varname + ">=" + valname, "false");
+                vars.Add(varname + "/=" + valname, "true");
+                vars.Add(valname + "=" + varname, "false");
+                vars.Add(valname + ">" + varname, "true");
+                vars.Add(valname + ">=" + varname, "true");
+                vars.Add(valname + "<" + varname, "false");
+                vars.Add(valname + "<=" + varname, "false");
+                vars.Add(valname + "/=" + varname, "true");
+                wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx<" + valname + "_then_true_else_false");
+                wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx<" + valname + "_then_true_else_false");
+            }
+            else
+                Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+        }
+        return true;
+    }
+
+    private static bool greatereqlet(string s)
+    {
+        string varname = ParseTools.fixneg(ParseTools.remspaces(ParseTools.listsplit(s.Substring(5), ">=")[0]));
+        string valname = ParseTools.remstartspaces(ParseTools.singlelistsplit(s.Substring(5), ">=")[1]);
+        if (ParseTools.betwparen(varname).Length > 0 && ParseTools.betwparen(varname)[0] == varname.Substring(1, varname.Length - 2))
+            varname = ParseTools.betwparen(varname)[0];
+        bool haswildcard = false;
+        if (valname.Contains("world"))
+        {
+            Console.WriteLine("Error: Cannot use world value from within a function, attempted to call \"world\" from \"" + valname + "\"");
+            return true;
+        }
+        if (varname == valname)
+        {
+            Console.WriteLine("Error: Cannot make value greater thanor equal to itself, tried to say \"" + varname + "\" is greater thanor equal to \"" + valname + "\"");
+            return true;
+        }
+        if (vars.ContainsKey(varname))
+            Console.WriteLine("Error: Value under name \"" + varname + "\" already exists, bound to value \"" + vars[varname] + "\"");
+        else if (ParseTools.split(s, "_if_").Length == 2 && ParseTools.split(s, "_then_").Length == 1)
+        {
+            string res = ParseMath(ParseTools.split(s, "_if_")[1]);
+            if (res == "false")
+                return true;
+            else if (res == "true")
+            {
+                valname = ParseTools.remspaces(ParseTools.split(valname, "_if_")[0]);
+                if (varname == valname)
+                {
+                    Console.WriteLine("Error: Cannot make value greater or equal to than itself, tried to say \"" + varname + "\" is greater than or equal to \"" + valname + "\"");
+                    return true;
+                }
+                foreach (char j in valname)
+                {
+                    if (j >= 'A' && j <= 'Z')
+                    {
+                        haswildcard = true;
+                        break;
+                    }
+                }
+                if (!haswildcard)
+                {
+                    vars.Add(varname, "unknown");
+                    vars.Add(varname + ">=" + valname, "true");
+                    vars.Add(varname + "<" + valname, "false");
+                    vars.Add(valname + "<=" + varname, "true");
+                    vars.Add(valname + ">" + varname, "false");
+                    wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx>=" + valname + "_then_true_else_false");
+                    wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx>=" + valname + "_then_true_else_false");
+                }
+                else
+                {
+                    Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+                }
+
+            }
+            else return true;
+        }
+        else
+        {
+            foreach (char j in valname)
+            {
+                if (j >= 'A' && j <= 'Z')
+                {
+                    haswildcard = true;
+                    break;
+                }
+            }
+            if (!haswildcard)
+            {
+                vars.Add(varname, "unknown");
+                vars.Add(varname + ">=" + valname, "true");
+                vars.Add(varname + "<" + valname, "false");
+                vars.Add(valname + "<=" + varname, "true");
+                vars.Add(valname + ">" + varname, "false");
+                wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx>=" + valname + "_then_true_else_false");
+                wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx>=" + valname + "_then_true_else_false");
+            }
+            else
+                Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+        }
+        return true;
+    }
+
+    private static bool lesseqlet(string s)
+    {
+        string varname = ParseTools.fixneg(ParseTools.remspaces(ParseTools.listsplit(s.Substring(5), "<=")[0]));
+        string valname = ParseTools.remstartspaces(ParseTools.singlelistsplit(s.Substring(5), "<=")[1]);
+        if (ParseTools.betwparen(varname).Length > 0 && ParseTools.betwparen(varname)[0] == varname.Substring(1, varname.Length - 2))
+            varname = ParseTools.betwparen(varname)[0];
+        bool haswildcard = false;
+        if (valname.Contains("world"))
+        {
+            Console.WriteLine("Error: Cannot use world value from within a function, attempted to call \"world\" from \"" + valname + "\"");
+            return true;
+        }
+        if (varname == valname)
+        {
+            Console.WriteLine("Error: Cannot make value less than or equal to itself, tried to say \"" + varname + "\" is less than or equal to \"" + valname + "\"");
+            return true;
+        }
+        if (vars.ContainsKey(varname))
+            Console.WriteLine("Error: Value under name \"" + varname + "\" already exists, bound to value \"" + vars[varname] + "\"");
+        else if (ParseTools.split(s, "_if_").Length == 2 && ParseTools.split(s, "_then_").Length == 1)
+        {
+            string res = ParseMath(ParseTools.split(s, "_if_")[1]);
+            if (res == "false")
+                return true;
+            else if (res == "true")
+            {
+                valname = ParseTools.remspaces(ParseTools.split(valname, "_if_")[0]);
+                if (varname == valname)
+                {
+                    Console.WriteLine("Error: Cannot make value less than or equal to itself, tried to say \"" + varname + "\" is less than or equal to \"" + valname + "\"");
+                    return true;
+                }
+                foreach (char j in valname)
+                {
+                    if (j >= 'A' && j <= 'Z')
+                    {
+                        haswildcard = true;
+                        break;
+                    }
+                }
+                if (!haswildcard)
+                {
+                    vars.Add(varname, "unknown");
+                    vars.Add(varname + "<=" + valname, "true");
+                    vars.Add(varname + ">" + valname, "false");
+                    vars.Add(valname + "<=" + varname, "true");
+                    vars.Add(valname + ">" + varname, "false");
+                    wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx<=" + valname + "_then_true_else_false");
+                    wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx<=" + valname + "_then_true_else_false");
+                }
+                else
+                {
+                    Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
+                }
+
+            }
+            else return true;
+        }
+        else
+        {
+            foreach (char j in valname)
+            {
+                if (j >= 'A' && j <= 'Z')
+                {
+                    haswildcard = true;
+                    break;
+                }
+            }
+            if (!haswildcard)
+            {
+                vars.Add(varname, "unknown");
+                vars.Add(varname + "<=" + valname, "true");
+                vars.Add(varname + ">" + valname, "false");
+                vars.Add(valname + "<=" + varname, "true");
+                vars.Add(valname + ">" + varname, "false");
+                wildcards.Add(varname + "?=Internalvarx", "_if_internalvarx<=" + valname + "_then_true_else_false");
+                wildcards.Add("Internalvarx?=" + varname, "_if_internalvarx<=" + valname + "_then_true_else_false");
             }
             else
                 Console.WriteLine("Error: Cannot have capital letters in function/variable name, tried to use name \"" + varname + "\"");
@@ -1295,19 +1674,27 @@ public static class Parser
                     }
                     if (s.Substring(i, 2) == "<=")
                     {
-
+                        foreach (string stemp in ParseTools.listsplit(s.Substring(5), ","))
+                            lesseqlet("_let_" + stemp);
+                        break;
                     }
                     if (s.Substring(i, 2) == ">=")
                     {
-
+                        foreach (string stemp in ParseTools.listsplit(s.Substring(5), ","))
+                            greatereqlet("_let_" + stemp);
+                        break;
                     }
-                    if (s.Substring(i, 2) == "<")
+                    if (s.Substring(i, 1) == "<")
                     {
-
+                        foreach (string stemp in ParseTools.listsplit(s.Substring(5), ","))
+                            lesslet("_let_" + stemp);
+                        break;
                     }
-                    if (s.Substring(i, 2) == ">")
+                    if (s.Substring(i, 1) == ">")
                     {
-
+                        foreach (string stemp in ParseTools.listsplit(s.Substring(5), ","))
+                            greaterlet("_let_" + stemp);
+                        break;
                     }
                     if (s.Substring(i, 1) == "=")
                     {

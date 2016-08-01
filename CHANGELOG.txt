@@ -1,17 +1,17 @@
-Build 1.0:
+Version 1.0:
 Initial Release
 
-Build 1.1:
+Version 1.1:
 Bug Fixes
 
-Build 1.2:
+Version 1.2:
 Higher-order functions
 Tutorial
 More complete list support
 Performance improvements
 Bug fixes
 
-Build 1.3:
+Version 1.3:
 More complete list support
 Header files
 Performance improvements
@@ -23,8 +23,8 @@ Eager evaluation variable assignment
 Pattern matching
 Lambdas
 
-Build 1.4:
-Completely redone functions
+Version 1.4:
+Completely redone functions to become truely functional
 Turing-complete
 Respects the untyped lambda calculus
 List library
@@ -33,3 +33,6 @@ Redid IO commands
 Bug fixes
 Pipe operators
 Prepared language for constraint programming support
+
+  Revision 1.4.1:
+  Implemented a large portion of constraint programming ability

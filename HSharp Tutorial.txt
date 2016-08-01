@@ -1,0 +1,508 @@
+Learning H#
+
+Hello everybody! My name is Phil Lane, and I'm here to teach you how to use H#. Now, as I am the creator of the language, this tutorial will be the most accurate and deep tutorial you'll ever find. So let's do this!
+
+About H#
+
+H# is an interpreted, functional, half-lazy, weakly-typed scripting language. It is interpreted, meaning it does not run on the level of machine code, but rather, has a program running behind the H#. It's also functional, meaning programs are expressed as function calls. All functions have outputs lacking side effects. This means you can theoretically call any function at any time without worrying about it changing program state. All values are immutable, so even if a function wanted to screw with your variables, it wouldn't be able to.
+
+H# is also very weakly-typed. The program will not break if you try to divide a boolean by a list. If the interpreter cannot do an operation with the values provided to it, it lets its internal CAS just return the value it was given. This method also means that you can use variables not yet defined to it. We'll discuss this in more detail later on.
+
+Regarding H# being half-lazy: It uses lazy evaluation in some places and eager evaluation in other places. Later on, we'll learn where these places are.
+
+
+Chapter 1: Getting Familiar with HSCi
+
+As H# is influenced highly by math, you can almost call the language an enhanced calculator. Going off of this, we'll start with stuff that will be very familiar to you. Enter these into your H# Interactive console and check out the results:
+2+2
+6*5
+(3-5)/2
+2+4+x
+x+2+4
+7^8
+x where x=5
+If you did this correctly, you should have the results 4, 30, -1, 6+x, x+2+4, 5764801, and 5 respectively. We'll go over each of these and see why you got the results you did.
+
+The first two inputs demonstrate the basic arithmetic operations. H# supports the basic four: +, -, *, and / for addition, subtraction, multiplication, and division. H# follows the order of operations strictly.
+
+The third input shows how you can use parenthesis to change the order of operations.
+
+The fourth input shows the internal CAS at work. The math parser doesn't strive to "solve" an expression, but rather to "simplify" as much as possible.
+
+The fifth input shows that the CAS is not a full-fledged CAS (speed limitations) and that you should be careful in ordering your expressions. The reason this expression did not simplify is because H# evaluates left to right. It tried to add x+2. Being unsuccessful, it moved on. It tried to add 4 to x+2. It knew that x was unknown, but doesn't see that it can add it to 2 to get the result of x+6.
+
+The sixth shows exponentiation at work.
+
+The seventh and final input shows a glimpse of something we will go over in much depth later on. Just a sneak peak!
+
+Regarding HSCi itself: it will simplify an expression and return the result onto the console screen. No need to use any output command.
+
+H# has eight main types:
+Number
+Boolean
+List (can contain several different types inside of it)
+Unknown
+Infinity
+Function
+World
+Unit
+
+We touched on numbers just earlier. Anything from 4 to .1 to -999999 is a number.
+
+A boolean is either "true" or "false." Because of this, if a value is a boolean, it can only have two possible values.
+
+A list is kind of self-explanatory. It is a list of different values, all contained in one, singular value.
+
+Infinity is just infinity. You can generate this value by doing <some number>/0 in HSCi.
+
+Unknown is a bit different, and this will also be covered later on.
+
+A function is, well, a function. Later on we'll see how these are first-order value types, instead of a structure.
+
+World represents the outside world. World is passed to (and, behind the scenes, returned from) IO functions. This allows H# to support IO functions without breaking referential transparency.
+
+Unit is the "nothing" value. In imperative languages where you may have functions, you often can make them of type "void." Since all functions have a return value, "unit" is the return value you would have from these types of functions.
+
+There are ways to print text to the screen in H#, so you may be wondering, "What about strings or characters? Aren't those datatypes?" Actually, no. Strings are syntactic sugar for number lists, containing the ASCII codes of the individual characters. Go ahead, try it yourself! Go to HSCi and type in "Hello world!", and you'll get a list of the different ASCII codes.
+
+
+Chapter 2: Booleans and Branching
+
+There are a few main boolean operators:
+= (equals)
+/= (not equals)
+> (greater than)
+>= (greater than or equal to)
+< (less than)
+<= (less than or equal to)
+?= (could be equal to)
+and (and)
+or (or)
+Each of these operators are infix operators, meaning they take two parameters: one on the left-hand side, and one on the right. We can even try these out right now! Grab your handy HSCi and try out some code:
+3=3
+3>5
+3/=3
+x=x
+x=y
+7=7 and 3>-6
+true and false
+true or false
+Each of these should return a boolean condition: either "true" or "false." The first six operators (= thru <=) should be familiar to you, and I won't bother going over those (note that = and /= work on any two values, but the other four only work on numeric values). I didn't give an example of ?= because that only becomes relevant in the far future in the constraint programming chapter.
+
+"and" and "or" are ways to check multiple boolean values. "and" requires both the left and right to be "true." "or" requires only one of the sides to be "true." They are lazy, which means: if you make a chain of "and"/"or" operators, they will evaluate each one from left to right. If you have a chain of "and"s and one term is "false," the chain returns false immediately and doesn't bother checking any more. If you have a chain of "or"s and one term is "true," the chain returns true immediately and doesn't bother checking any more. We can demonstrate this:
+3=3 and 4/=4 and 5=5
+here, 5=5 is never actually evaluated. Since 4/=4 is false, the interpreter knows that there's no use in checking any further, since the chain will return false anyway.
+
+What is this good for? Well, we have our first example of branching: an "if" expression! In H#, there is no "if" statement, since that goes against the functional paradigm. "if" expressions have a return value.
+if [condition] then [value 1] else [value 2]
+If you know Haskell, you'll find that H# "if" expressions are identical to those of Haskell. So if I have:
+if 4>1 then 0 else 1
+You'll see that the expression has the value of "0". However, if you flip the > to a <
+if 4<1 then 0 else 1
+The expression has the value of "1". This will become one of our most important tools later on.
+
+
+Chapter 3: The "let" Command
+
+Variables in H# are immutable, meaning that once they're assigned, they stay that way forever and can never be changed. To assign a value to a variable, we use the "let" command:
+let [variable] = [value]
+IMPORTANT NOTE: Variables cannot have capital letters for reasons explained later on!
+So if we wanted to assign the value of 4 to variable x, we would say
+let x = 4
+Put that in HSCi. Then, if you type "x", you'll receive the value 4! Note that [value] part of a "let" command is lazy. It is evaluated when the variable is referenced. This means that if you do
+let x = 2+2
+x is not equal to 4. It is equal to 2+2 and strictly 2+2. However, referencing "x" gives the value of 4. Why is this? Well, remember that the math parser simplifies as much as possible. So here's the thought going through the parser's head:
+x //okay, so what does x equal?
+2+2 //cool, cool, but I can simplify this
+4 //looks good enough to me, let's give this back to the user
+Note that // denotes a comment. Anything after // on a line is not parsed.
+Now that we see this, let's try chaining together some variable declarations:
+let x = y
+let y = z
+let z = 2 + a
+let a = 3
+Typing in x into HSCi returns 5, so let's see the thoughts of the interpreter:
+x => y => z => 2+a => 2+3 => 5
+
+"let" is not restricted to variables. Check out this cool code:
+let 2+2 = 5
+This may make math explode, but H# goes along with it. From now on in the code, doing 2+2 will return the value of 5! "let" allows you to assign a value to any variable or expression, given it has not been already assigned. Try out this code:
+let 3+2 = 6
+let 3+2 = 5 //error: Value under name "3+2" already exists, bound to value "6"
+Trying to recalculate 3+2 will always return 6 forevermore.
+
+There is a specific predicate you can attach to "let" statements called the "if" predicate. If the condition evaluates to "true", then the value will be bound. Otherwise, the "let" statement is ignored. BE CAREFUL WITH IF PREDICATES! If you have code like:
+let y=5 if x=6
+there is no guarentee that y will ever hold a value! It would be most efficient to either do:
+let y=5 if x=6
+let y=4 if x/=6 //ensures that y will eventually be defined
+or the better, more declarative way:
+let y = if x=6 then 5 else 4
+Note that in the latter technique, x is check every time y is referenced. If you want the value checked only once, the former technique is better.
+
+Say you want to assign a value to a variable, but you want the expression to be evaluated first. For example, if you do:
+
+let x = 2+2
+
+You want "2+2" to evaluate to "4", and then be stored to "x". Well, there is a way to do this, using the left arrow operator. It looks like this:
+
+let [variable] <- [value]
+
+It evaluates "value" before storing to "variable." So now, we can rewrite our previous code to:
+
+let x <- 2+2
+
+And there: "x" is now equal to "4".
+
+
+Chapter 4: "where" Predicates
+
+Let's say you want 2+2 to be equal to 5, but for only one command. After that command, you want 2+2 to go back to being 4. Well, what you need is a "where" predicate:
+(3-1)+2 where 2+2=5
+"where" predicates provide a sort of encapsulation in H#. They bind a value to a variable/expression, and then unbinds the value once the line is finished parsing.
+x where x=3 //evaluates to 3
+x //evaluates to x, since x was unbound from 3 after the previous line
+
+You can chain "where" predicates back-to-back, and they'll evaluate from right to left. The two lines are equivalent:
+x where x=y where y=z where z=a where a=1
+x where x=(y where y=(z where z=(a where a=1)))
+This means that you CANNOT do the following:
+x where x=y+(y where y=1) //evaluates to y+1 instead of 2, because y goes out of scope once it leaves the parenthesis
+but you CAN do
+x where x=y+y where y=1
+because the parenthesis are implied at
+x where x=(y+y where y=1)
+
+Later on, "where" predicates will become very essential to our programs.
+
+
+Chapter 5: Reviewing What We Know So Far
+
+So in the previous four chapters, we went over math, H# types, branching, "let" commands, and "were" predicates. Now let's put these all to good use! Let's convert the following small C# program to H# (assuming the following code is inside a static class):
+
+private const int input = 10; //any input can be here. I'm using an input variable since we won't be using IO commands in H#
+private static int x()
+{
+    int y=5;
+    return Math.Pow(y+3, 2)*5;
+}
+public static int Main()
+{
+    if (input > 9)
+    {
+        return x();
+    }
+    else
+    {
+        return x() + input;
+    }
+}
+
+So first off, we can directly port the first line to
+let input = 10
+Now we need to port the function x. It takes no arguments, so we can state it as a variable. But wait, it declares y inside of x! Not to fear, this is the main reason why "where" predicates exist!
+let x = (y+3)^2*5 where y=5
+Now for our main program, this doesn't need to be inside a function. Since we have to convert from an imperative paradigm to a functional paradigm, we will need to change how we approach this. Remember that "if" statements in H# are not stataments, but expressions. So we can return x, and then add either input or 0 depending on our condition.
+x + if input > 9 then 0 else input
+Perfect! Now we have our entire program. Notice how we made a full paradigm shift! We can further compact this code by changing "let input" to a "where input" predicate on the last line. We have our final, full program:
+let x = (y+3)^2*5 where y=5
+x + if input > 9 then 0 else input where input = 10
+Perfect! Run the program and you should see 320. Since we ended up using "where" in the final program instead of a standard variable, we can rerun the final line as much as we want with as many different values as we want! Change the "input=10" to "input=6" and you should see 326. It adds the 6 to 320 since 6 is not greater than 9.
+
+Notice how we put the "where" predicate as the outermost statement. As a general rule, "where" predicates should always be outside everything else in a line, unless you're using parenthesis. If you nest a "where" predicate inside a line and don't wrap () around it, YOUR PROGRAM IS LIKELY TO BREAK OR BEHAVE UNEXPECTEDLY.
+
+Congratulations! You've made your first H# program! In the next chapter, we're going to learn about the core of functional programming, and the powerful tools that push it in H#.
+
+
+Chapter 6: Functions, Lambdas, and Pipe Operators
+
+Functions. Functional programming. Functional programming is, in essence, programming by the use of function calling. In this chapter, we'll learn how H# decides to implement functions. First, let's try out one of the built-in functions:
+floor|6.2
+The floor function rounds any number toward 0. As you notice, the function name comes first, then a bar/pipe, then the value. Let's try a function with multiple arguments:
+nrt|16|4
+The nth root function takes two arguments--the number and the base respectively--and finds the nth root. Notice it's the same syntax but with a bar separating the arguments. Why don't you say we make one of these functions!
+let addone = x -> x+1
+So this is a little complicated what's going on. This is actually a lambda. Lambdas are the actual function. They take an input, assign it to the value on the left side of ->, and feed it to each occurrence on the right side of the ->. So in our example, it takes an input, calls it "x", and replaces each "x" with that input. We give input by using the regular pipe operator, or "|".
+
+So we can redo the addone function like this:
+(x -> x+1)|6
+and we see it returns seven! When we assigned "x -> x+1" to "addone," we were just giving our lambda a name to be used later on. This is the train of thought by the interpreter:
+"So I have a lambda 'x -> x+1'. I'll store that temporarily in my memory."
+"Oh, the user wants to pipe 6 into that function! So passing 6 into 'x -> x+1' means to assign 6 to x temporarily. This leaves me with '6+1'"
+"'6+1' simplifies to 7. I'll return that as output"
+
+Let's make a more generic function:
+let ad = x -> y -> x+y
+Now we've made an addition function! Notice I named it "ad" instead of "add," because "add" already exists with this exact value. We can call "ad" by doing:
+ad|4|5
+and we get 9! As with our function earlier, we can redo this to look like:
+(x -> y -> x+y)|4|5
+
+The chain of arrows can be rewritten, so that "x -> y -> x+y" looks like "x -> (y -> (x+y))". That's how the interpreter reads lambdas. The first lambda that takes "x" in passes "x" into ANOTHER lambda; this one is nested inside the first one. This allows us to pass a single parameter to a multiple parameter function, and store it to pass the other parameters later on. This is called a partially applied function, and we'll learn more about this in chapter 8.
+
+Let's look at the pipe operator. The regular pipe operator, or "|", will take what's on the right hand side and feed it into the left hand side. It starts from the left. There are two more pipe operators: the left pipe, and the right pipe.
+The right pipe operator, or "|>", will take what's on the left hand side and feed it into the right. It starts from the left. It's good for chaining together functions and their output. In a language like C#, you might have a function chain that looks like
+a(b(c(x)))
+In H#, we could write it like
+a|(b|(c|x))
+However, it would be more clearly written like this
+x |> c |> b |> a
+Which feeds x into c, feeds that output into b, and feeds that output into a. There's also the left pipe operator, which is the exact mirror of the left pipe. So we could also do
+a <| b <| c <| x
+
+You won't usually use directional pipe operators, but they're handy when using the "ignore" function. Instead of doing
+ignore|(insert the line here)
+It's much easier and clearer to do
+insert the line here |> ignore
+
+In case you didn't know, the ignore function takes any input and returns "unit." This is handy for multiple-line programs for reasons expressed later.
+
+Below is a full list of built-in H# functions:
+sin = Number -> Number //sine
+cos = Number -> Number //cos
+tan = Number -> Number //tan
+asin = Number -> Number //arcsine
+acos = Number -> Number //arccosine
+atan = Number -> Number //arctangent
+print = Value -> World -> Unit //output the value
+printstr = List -> World -> Unit //output a number list as a string
+printstrln = List -> World -> Unit //output a number list as a string followed by a newline
+getstr = World -> String //return user input as number list representing a string
+getnum = World -> Number //return user numeric input as number. if user did not give numeric input, returns 0
+floor = Number -> Number //round toward 0
+ceiling Number -> Number //round away from 0
+map = Function -> List -> List //map function to list (discussed later)
+filter = Function -> List -> List //filter values from list via function (discussed later)
+round = Number -> Number //round as per standard math rounding procedure
+max = Number -> Number -> Number //get the greater of two numbers
+min = Number -> Number -> Number //get the lesser of two numbers
+abs = Number -> Number //absolute value
+ln = Number -> Number //natural log
+log = Number -> Number -> Number //log base 10
+logn = Number -> Number -> Number //log base 2nd parameter
+sign = Number -> Number //if number is negative, 0, or positive; return -1, 0, or 1 respectively
+sqrt = Number -> Number //square root
+cbrt = Number -> Number //cube root
+nrt = Number -> Number -> Number //get 2nd argument's root of first argument
+truncate = Number -> Number //remove decimal part of number
+reciprocal = Number -> Number //get reciprocal
+ignore = Value -> Unit
+querystr = List -> World -> List //print list as string, get user input as string, and return the list
+querynum = List -> World -> Number //print list as string, get user input as number, and return the number
+add = Number -> Number -> Number //add two numbers
+subtract = Number -> Number -> Number //subtract two numbers
+multiply = Number -> Number -> Number //multiply two numbers
+divide = Number -> Number -> Number //divide two numbers
+debug = Value -> Value //feed Value to console output and return Value (UNSAFE/BREAKS REFERENTIAL TRANSPARENCY: YOU SHOULD ONLY USE THIS IN DEBUGGING)
+
+
+Chapter 7: Higher-order Functions
+
+When we were learning about H# types, we saw that a function was just as much of a type as a number? How is this? The answer lies in higher-order functions. If you knew Java or C# or any similar language, you know that lambdas can be used as functions, and passed from function to function as a value itself. In languages like Haskell, H#, and F#; every function is like this! Any function you define can be passed as a value or called. Here's a basic example of using a higher-order function:
+let f = x -> x+1 //assign 'x -> x+1' to f
+let call = func -> value -> func|value //define call to take two parameters: a function, and a value
+call|f|5 //executing the "call" function, passing our previous function (f) as a parameter!
+
+Go on and try it! You should get "6". As we see, we define f as a function, pass it as a parameter to another function, and call it from there!
+
+If that's a little complicated, here's an easier example:
+let f = x -> x+1 //define f
+let g = f //assign g to the function f
+g|5 //call the function f via calling g
+
+An example of a higher-order function in H# is the "map" function. It takes 2 arguments: a function with one argument, and a list. In chapter 8, we'll get to use this function.
+
+Higher-order functions are easy to explain, but take a while to get used to. Just remember: function names are just aliases for unnamed lambdas. Assigning that function to another value (i.e. a higher-order function) is just chaining on another alias.
+
+
+Chapter 8: Partially Applying Functions
+
+In Chapter 6, we touched on partially applied functions. We said we can apply one parameter to a multiple parameter function, store that result as a "partially applied function," and apply the other parameters later on.
+
+Let's get a taste of what partially applied fuctions look like (remember that 'add' is defined as x->y->x+y as a built-in function)
+let addfive <- add|5
+addfive|6 //11
+So what's going on here? Well first, "addfive" is assigned eagerly to "add|5", which partially applies the "add" function. So if the "add" function looks like this:
+x -> y -> x+y
+then partially applying it with a single parameter '5' turns it into:
+y -> 5+y
+which is then stored into "addfive". This is a feature of the language and can be used with any built-in or user-defined function. Try it yourself!
+let square = map|(x -> x^2)
+square|[1..5] //[1, 4, 9, 16, 25]
+Also notice that you don't have to use <- or = specifically if you're partially applying a function and storing it. <- is better for large code because it runs the first argument once through the original function. Using =, however, recalculates the first argument every time the function is called, so you'll end up with slower code.
+
+So here's a challenge for you. Given you have a function defined as
+let addthree = x -> y -> z -> x+y+z
+I want you to create a function that adds 1 to any input. Do not use lambdas and do not use a + or the "add" function.
+
+Think you have it? Here's the solution:
+let inc = addthree|0|1 //you can also do |1|0 or use directional pipes
+or
+let inc <- addthree|0|1 //you can also do |1|0 or use directional pipes
+Did you get it? If so, good job. If not, keep playing around with partially applied functions. They're a big part of functional languages and they're very powerful.
+
+
+Chapter 9: Lists
+
+In this chapter, we'll learn all about lists! First off, let's say we had 3 values: 1, 2, and 3, and we wanted to store all of those into variable x. How would we do it? Put it in a list!
+let x = [1, 2, 3]
+now, if we ask for the value of x, it will return:
+[1,2,3]
+Now how would we get an individual value from this list? We will use the following syntax: List{Index}. Lists are 0-indexed, meaning, to get the first element, you do list{0}. The second element is list{1}, the third is list{2}, etc. So if we have our list [1,2,3] and we wanted to extract the 3rd element, we would say:
+x{2}
+and out comes our output: 3.
+
+Now say we wanted all numbers from 1 to 100 in a list. This would be extremely tedious to do. Imagine:
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18...etc...]
+Luckily, there's a special operator for this task: the .. operator. If we do [X..Y] in a list, it contains a list with all the numbers from X to Y inclusive. So, you can type into HSCi:
+[1..100]
+And you'll receive your list! You can even do them backwards:
+[10..1]
+
+Now what if we only wanted the even numbers? Well, my friend, if you provide the first two numbers of a list, followed by the .. operator, H# will continue your pattern!
+[2, 4..100]
+Try it out! Your list will look something like:
+[2,4,6,8,10,12,14,16,18,20...etc...100]
+
+So let's look at some functions we can apply to lists. Two of the biggest ones will be "map" and "filter." The "map" function takes two input values: a function with one input value, and a list. It then distributes the function over each element of the list.
+
+So if we have the C# code:
+
+private static int square(int a) { return a * a; }
+private static int[] Main()
+{
+    int[] list = new int[] { 1, 2, 3, 4, 5 };
+    for(int i=0; i<list.Length; i++)
+    {
+        list[i] = square(list[i]);
+    }
+}
+
+We see it declares a function that returns the square of the input. It then declares an array containing the numbers 1 through 5. Finally, it applies the "square" function to each element of "list". Let's rewrite this in H#:
+
+map|f|[1..5] where f=x->x^2
+
+Wow! It's so much shorter and honestly much more readable. We can revisit the C# code and try to make it as concise as possible:
+
+private static int[] Main()
+{
+   return Enumerable.Range(1, 5).Select(x => x*x).ToArray();
+}
+
+It's better, but still nowhere near as clean as the H#, where these functions are a native part of the language.
+
+Continuing on, the "filter" function takes two input values: a function with one input value returning a boolean, and a list. It applies the function to each element of the list. If it returns true, it stays. If it returns false (or any non-boolean value), it goes. We can use this to make a list containing all primes between 3 to 20:
+
+filter|isprime|[3, 5..20] where isprime=...
+
+And viola! A list containing all my wonderful primes!
+
+
+Chapter 10: Multi-line Programs and IO Functions
+
+So this whole time, we've been writing our "programs" in the interactive console. Let's make our first "real" program! First, pull up your handy editor. The .xml included in the H# download provides H# syntax highlighting in Notepad++, so it is suggested you use that editor. However, it doesn't really matter what you use.
+
+Next, write in the following short script:
+
+let x = y*z*a where
+	y=5,
+	z=3,
+	a=4;
+let b <- x;
+
+Then, save your script as a .hsh file. Select the file and click "Run With->HSCi". This will turn HSCi into HSC. Your program will run. Tada! A multiline program!
+
+Multiline programs are just like programs in HSCi, except for three things:
+Newlines are ignored
+Commands are separated with semicolons
+The return value of a line MUST be "unit"
+So now we can write longer programs with more meaning! The best part is that you can break up really long lines into shorter, more comprehensible lines. Additionally, syntax highlighting is always a plus. However, one thing is missing...
+
+Output to the console! In HSCi, the value of a line is automatically pushed to the output screen. In HSC, this is not the case. You must manually use IO commands. Let's rewrite the before program in a way to see the final value of "b", and then we'll break down what the command is doing.
+
+##enableIO;
+let x = y*z*a where
+	y=5,
+	z=3,
+	a=4;
+let b <- x;
+print|b|world;
+
+So the first thing we see is a weird command that starts with two hash symbols. There are so far only four commands like this:
+##enableCAS
+##disableCAS
+##enableIO
+##disableIO
+These change how the program is interpreted. The first two either enable or disable the Computer Algebra System. So the following won't work (use HSCi for this):
+
+##disableCAS
+2+3+x
+
+Because it doesn't know what "x" is, it throws an error that it can't parse the line. Why? Well, it's the CAS that allows 2+3+x to be simplified into 5+x. If you do ##enableCAS and retry, you'll get the correct result. The CAS is enabled by default by both HSC and HSCi.
+
+The second two either enable or disable IO commands. Because IO commands do cause side effects, it requires the user to manually enable them. They must be enabled from the main file, so any library is prevented from enabling or disabling it for you. We'll learn more about files and libraries in the next chapter. IO is enabled by default in HSCi but disabled by default in HSC.
+
+So the next thing we see in our program is the "print" command, which looks like "print|b|world;". So the name of the command and first parameter is obvious: it prints the value of "b." But what is this mysterious parameter, "world?" Well, as explained in Chapter 1, it contains information regarding the outside world. H# does this to preserve something called "referential transparency."
+
+Referential Transparency basically means that: Any function called with the same parameters will ALWAYS return the same result. This is one of the foundations of functional programming. If an entire language is referentially transparent, we call it "purely functional." Very few languages are purely functional. Haskell and Clean are a couple that are.
+
+IO is difficult though. Say the input function. There's no way to know what the user will input, so how can we make a referentially transparent input function? Well, the answer is simple: Make sure it's impossible for the user to call the same function with the same parameters. We call this "bonus" argument the "world state." In H#, it contains two main values: The current time, and how long it's been since the program was started. Therefore, since we can't go back in time, it's impossible to call the input function with the same value twice, preserving referential transparency. The "print" function works in much the same way.
+
+Once the "world value" has been passed to an IO function, it is refreshed and updated. The world value is only updated when an IO function is executed (when it fetches the new state). It is impossible to assign a new value to "world," and it is impossible to extract the value out of "world." Even doing something like:
+
+let x = world
+
+will return an error. It is impossible to have "world" on the right-hand side of a lazy assignment. So to have a function that returns the input, you'd have to do something like:
+
+let x = x -> getstr|w;
+x|world;
+
+or
+
+let x <- getstr|world;
+
+IO is tricky business in a purely functional language. H#'s solution is most similar to Clean's solution (world passing). Haskell uses monads, and other languages have their own solutions. These are the IO operations currently supported by H#:
+
+print = x -> world -> unit //output the value of x
+printstr = x -> world -> unit //if X is a number list, output as a string
+printstrln = x -> world -> unit //if X is a number list, output as a string followed by a newline
+getstr = world -> string //return a number list representing the string input by the user
+getnum = world -> string //return the numeric value of the user input (if the user doesn't input a number, it returns 0)
+
+So we can finally (after 9 chapters!) make an H# Hello World program:
+
+##enableIO;
+printstrln|"Hello, World!"|world;
+
+Now let's make a basic cat program (repeats user input back to the user):
+
+##enableIO;
+printstrln|(getstr|world)|world;
+
+And a basic dialog program:
+
+##enableIO;
+printstrln|"Hello! What's your name?"|world;
+let name <- getstr|world;
+printstrln|(("Nice to meet you, " ++ name) ++ "!")|world;
+
+
+Chapter 11: A Big Review
+
+
+Chapter 12: Importing Libraries
+
+
+Chapter 14: Pattern Matching
+
+
+Chapter 15: Solidifying our Knowledge
+
+
+Chapter 16: Constraint Programming in H#
+
+
+Chapter 17: Parallelism
+
+
+Chapter 18: Wrapping up Everything

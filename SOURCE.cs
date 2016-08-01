@@ -69,6 +69,7 @@ class MainLoop
         Parser.vars.Add("pi", Convert.ToString(Math.PI));
         Parser.vars.Add("e", Convert.ToString(Math.E));
         Parser.vars.Add("∞", "infinity");
+        Parser.vars.Add("", "unit");
     }
 
     public static void Exec(string[] args)
@@ -126,7 +127,7 @@ class MainLoop
         AddData();
         if (args.Length == 0)
         {
-            Console.Write("Version 1.3, H# Interactive: http://iamapersson.github.io/hsharp/ \nPhil Lane Creations\n");
+            Console.Write("Version 1.4.1, H# Interactive: http://iamapersson.github.io/hsharp/ \nCopyright 2016 Phil Lane Creations\n");
             string inp;
             Parser.IO = true;
             while (true)

@@ -1,0 +1,11 @@
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\World\bin\Debug\World.dll
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\World\bin\Debug\World.pdb
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\World\obj\Debug\World.csprojResolveAssemblyReference.cache
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\World\obj\Debug\World.dll
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\World\obj\Debug\World.pdb
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\World\bin\Debug\World.dll
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\World\bin\Debug\World.pdb
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\World\obj\Debug\World.csprojResolveAssemblyReference.cache
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\World\obj\Debug\World.csproj.CoreCompileInputs.cache
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\World\obj\Debug\World.dll
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\World\obj\Debug\World.pdb

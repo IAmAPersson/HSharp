@@ -1,0 +1,10 @@
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\ParseTools\bin\Release\ParseTools.dll
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\ParseTools\bin\Release\ParseTools.pdb
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\ParseTools\obj\Release\ParseTools.dll
+C:\Users\Phillip\Documents\Visual Studio 2015\Projects\HCi\ParseTools\obj\Release\ParseTools.pdb
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\ParseTools\bin\Release\ParseTools.dll
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\ParseTools\bin\Release\ParseTools.pdb
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\ParseTools\obj\Release\ParseTools.csproj.CoreCompileInputs.cache
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\ParseTools\obj\Release\ParseTools.dll
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\ParseTools\obj\Release\ParseTools.pdb
+C:\Users\Phillip\OneDrive\Documents\Visual Studio 2017\Projects\HCi\ParseTools\obj\Release\ParseTools.csprojResolveAssemblyReference.cache
